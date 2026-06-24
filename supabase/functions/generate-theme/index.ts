@@ -299,6 +299,77 @@ const THEME_PRESETS: Record<string, Record<string, object>> = {
       hours: "Daily: 11:30am – 10pm",
       borderRadius: "8",
     },
+    street: {
+      siteName: "Street Spice",
+      tagline: "Bold flavors from Mumbai's streets",
+      primaryColor: "#E85A4F",
+      secondaryColor: "#C74B40",
+      accentColor: "#FFC857",
+      bgColor: "#FFF8F0",
+      textColor: "#2D3436",
+      navBg: "#E85A4F",
+      navText: "#FFFFFF",
+      footerBg: "#2D3436",
+      footerText: "#FFF8F0",
+      fontDisplay: "DM Serif Display",
+      fontBody: "Source Sans 3",
+      heroHeadline: "Street Food, Elevated",
+      heroSubline: "Vada pav, pav bhaji, and more — authentic Mumbai flavors.",
+      heroFoodKeyword: "indian",
+      ctaText: "Order Now",
+      address: "78 Chowpatty Lane",
+      phone: "+1 (555) 345-6789",
+      hours: "Daily: 10am – 11pm",
+      borderRadius: "12",
+    },
+  },
+  vadapav: {
+    minimal: {
+      siteName: "Vada Pav Co.",
+      tagline: "Mumbai's iconic street food",
+      primaryColor: "#728C69",
+      secondaryColor: "#5A7050",
+      accentColor: "#1A1A1A",
+      bgColor: "#FAFAFA",
+      textColor: "#1A1A1A",
+      navBg: "#1A1A1A",
+      navText: "#FFFFFF",
+      footerBg: "#1A1A1A",
+      footerText: "#FAFAFA",
+      fontDisplay: "Syne",
+      fontBody: "Inter",
+      heroHeadline: "The Soul of Mumbai",
+      heroSubline: "Crispy vada, soft pav, spicy chutney — street food perfection.",
+      heroFoodKeyword: "indian",
+      ctaText: "Order",
+      address: "42 Vikhroli Street",
+      phone: "+1 (555) 123-4567",
+      hours: "Daily: 11am – 10pm",
+      borderRadius: "24",
+    },
+    premium: {
+      siteName: "Vada Pav Haus",
+      tagline: "Elevated street cuisine",
+      primaryColor: "#1C1C1C",
+      secondaryColor: "#333333",
+      accentColor: "#8B9A46",
+      bgColor: "#FFFFFF",
+      textColor: "#1C1C1C",
+      navBg: "#1C1C1C",
+      navText: "#FFFFFF",
+      footerBg: "#0D0D0D",
+      footerText: "#FFFFFF",
+      fontDisplay: "Cormorant Garamond",
+      fontBody: "Plus Jakarta Sans",
+      heroHeadline: "Street Food, Reimagined",
+      heroSubline: "Premium vada pav with artisan chutneys and fresh ingredients.",
+      heroFoodKeyword: "indian",
+      ctaText: "Visit Us",
+      address: "88 Gourmet Street, Downtown",
+      phone: "+1 (555) 987-6543",
+      hours: "Tue–Sun: 11am – 10pm",
+      borderRadius: "6",
+    },
   },
   chinese: {
     classic: {
@@ -451,21 +522,157 @@ function generateTheme(prompt: string): object {
   }
 
   // Determine colors from prompt
+  const colorPalettes: Record<string, { primary: string; secondary: string; accent: string; bg: string; text: string; navBg: string; footerBg: string }> = {
+    black: {
+      primary: "#1A1A1A",
+      secondary: "#333333",
+      accent: "#FFFFFF",
+      bg: "#FAFAFA",
+      text: "#1A1A1A",
+      navBg: "#1A1A1A",
+      footerBg: "#0D0D0D",
+    },
+    white: {
+      primary: "#FFFFFF",
+      secondary: "#F5F5F5",
+      accent: "#1A1A1A",
+      bg: "#FFFFFF",
+      text: "#1A1A1A",
+      navBg: "#FFFFFF",
+      footerBg: "#F5F5F5",
+    },
+    red: {
+      primary: "#C41E3A",
+      secondary: "#8B0000",
+      accent: "#FFD700",
+      bg: "#FFFBF0",
+      text: "#2C1810",
+      navBg: "#C41E3A",
+      footerBg: "#2C1810",
+    },
+    green: {
+      primary: "#2D5A27",
+      secondary: "#1E3D1A",
+      accent: "#D4AF37",
+      bg: "#F8FAF7",
+      text: "#1A2E1A",
+      navBg: "#2D5A27",
+      footerBg: "#1A2E1A",
+    },
+    sage: {
+      primary: "#728C69",
+      secondary: "#5A7050",
+      accent: "#1A1A1A",
+      bg: "#FAFAFA",
+      text: "#1A1A1A",
+      navBg: "#1A1A1A",
+      footerBg: "#0D0D0D",
+    },
+    emerald: {
+      primary: "#10B981",
+      secondary: "#059669",
+      accent: "#FCD34D",
+      bg: "#F0FDF4",
+      text: "#1A3A2E",
+      navBg: "#10B981",
+      footerBg: "#1A3A2E",
+    },
+    blue: {
+      primary: "#1E6091",
+      secondary: "#154C79",
+      accent: "#F4A261",
+      bg: "#F0F7FA",
+      text: "#1B4965",
+      navBg: "#1E6091",
+      footerBg: "#0D3B66",
+    },
+    navy: {
+      primary: "#1A365D",
+      secondary: "#0F2B4A",
+      accent: "#EAB308",
+      bg: "#F8FAFC",
+      text: "#1E293B",
+      navBg: "#1A365D",
+      footerBg: "#0F172A",
+    },
+    orange: {
+      primary: "#EA580C",
+      secondary: "#C2410C",
+      accent: "#FCD34D",
+      bg: "#FFF7ED",
+      text: "#431407",
+      navBg: "#EA580C",
+      footerBg: "#431407",
+    },
+    gold: {
+      primary: "#B8860B",
+      secondary: "#996515",
+      accent: "#1A1A1A",
+      bg: "#FFFAF0",
+      text: "#2C1810",
+      navBg: "#B8860B",
+      footerBg: "#2C1810",
+    },
+    purple: {
+      primary: "#7C3AED",
+      secondary: "#5B21B6",
+      accent: "#FCD34D",
+      bg: "#FAF5FF",
+      text: "#3B0764",
+      navBg: "#7C3AED",
+      footerBg: "#3B0764",
+    },
+    pink: {
+      primary: "#EC4899",
+      secondary: "#BE185D",
+      accent: "#FCD34D",
+      bg: "#FDF2F8",
+      text: "#831843",
+      navBg: "#EC4899",
+      footerBg: "#831843",
+    },
+    brown: {
+      primary: "#78350F",
+      secondary: "#5C2D0C",
+      accent: "#FCD34D",
+      bg: "#FFFBEB",
+      text: "#451A03",
+      navBg: "#78350F",
+      footerBg: "#451A03",
+    },
+    teal: {
+      primary: "#0D9488",
+      secondary: "#0F766E",
+      accent: "#FCD34D",
+      bg: "#F0FDFA",
+      text: "#134E4A",
+      navBg: "#0D9488",
+      footerBg: "#134E4A",
+    },
+  };
+
   const colorPatterns: Record<string, RegExp> = {
     red: /\bred\b|\bcrimson\b|\bcherry\b/i,
-    green: /\bgreen\b|\bemerald\b|\bforest\b/i,
-    blue: /\bblue\b|\bnavy\b|\bocean\b|\baqua\b/i,
+    green: /\bgreen\b/i,
+    sage: /\bsage\b/i,
+    emerald: /\bemerald\b|\bforest\b/i,
+    blue: /\bblue\b/i,
+    navy: /\bnavy\b/i,
     black: /\bblack\b|\bdark\b|\bonyx\b/i,
     white: /\bwhite\b|\blight\b|\bclean\b/i,
     orange: /\borange\b|\bcitrus\b|\bpumpkin\b/i,
     gold: /\bgold\b|\bgolden\b|\byellow\b/i,
     purple: /\bpurple\b|\bviolet\b|\broyal\b/i,
+    pink: /\bpink\b|\bmagenta\b/i,
+    brown: /\bbrown\b|\bchocolate\b|\bwood\b/i,
+    teal: /\bteal\b|\bturquoise\b/i,
   };
 
-  let detectedColors: string[] = [];
+  let detectedColorKey = "";
   for (const [color, pattern] of Object.entries(colorPatterns)) {
     if (pattern.test(prompt)) {
-      detectedColors.push(color);
+      detectedColorKey = color;
+      break;
     }
   }
 
@@ -481,32 +688,51 @@ function generateTheme(prompt: string): object {
     const availableStyles = Object.keys(presets);
     style = availableStyles.includes(style) ? style : availableStyles[0];
 
-    return {
+    const baseTheme = {
       ...presets[style],
       navLinks: DEFAULT_NAV_LINKS,
       ...(extractedName && { siteName: extractedName }),
     };
+
+    // If user specified colors, override the preset colors
+    if (detectedColorKey && colorPalettes[detectedColorKey]) {
+      const palette = colorPalettes[detectedColorKey];
+      return {
+        ...baseTheme,
+        primaryColor: palette.primary,
+        secondaryColor: palette.secondary,
+        accentColor: palette.accent,
+        bgColor: palette.bg,
+        textColor: palette.text,
+        navBg: palette.navBg,
+        navText: "#FFFFFF",
+        footerBg: palette.footerBg,
+        footerText: palette.bg,
+      };
+    }
+
+    return baseTheme;
   }
 
-  // Fallback: analyze prompt and generate a custom theme
-  const isDark = lowerPrompt.includes("dark") || lowerPrompt.includes("black") || lowerPrompt.includes("modern");
-  const isWarm = detectedColors.includes("red") || detectedColors.includes("orange") || detectedColors.includes("gold");
-  const isCool = detectedColors.includes("blue") || detectedColors.includes("green");
+  // Fallback: analyze prompt and generate a custom theme using detected colors
+  const detectedPalette = detectedColorKey && colorPalettes[detectedColorKey]
+    ? colorPalettes[detectedColorKey]
+    : colorPalettes["green"];
 
   // Generate base theme
   const fallbackTheme = {
     siteName: extractedName || "Your Restaurant",
     tagline: "A unique dining experience",
-    primaryColor: isDark ? "#1A1A2E" : isWarm ? "#C41E3A" : isCool ? "#1E6091" : "#00BA6A",
-    secondaryColor: isDark ? "#16213E" : isWarm ? "#8B0000" : isCool ? "#154C79" : "#007a45",
-    accentColor: isDark ? "#E94560" : isWarm ? "#FFD700" : isCool ? "#F4A261" : "#ff6b35",
-    bgColor: isDark ? "#FFFFFF" : "#FFFBF0",
-    textColor: isDark ? "#1A1A2E" : "#2C1810",
-    navBg: isDark ? "#1A1A2E" : isWarm ? "#C41E3A" : isCool ? "#1E6091" : "#00BA6A",
+    primaryColor: detectedPalette.primary,
+    secondaryColor: detectedPalette.secondary,
+    accentColor: detectedPalette.accent,
+    bgColor: detectedPalette.bg,
+    textColor: detectedPalette.text,
+    navBg: detectedPalette.navBg,
     navText: "#FFFFFF",
-    footerBg: isDark ? "#0D0D0D" : "#2C1810",
-    footerText: "#FFFFFF",
-    fontDisplay: isDark ? "Syne" : "Playfair Display",
+    footerBg: detectedPalette.footerBg,
+    footerText: detectedPalette.bg,
+    fontDisplay: detectedColorKey === "black" || detectedColorKey === "white" ? "Syne" : "Playfair Display",
     fontBody: "Inter",
     heroHeadline: extractedName ? `Welcome to ${extractedName}` : "Crafted With Passion",
     heroSubline: "Experience dining like never before.",
@@ -515,7 +741,7 @@ function generateTheme(prompt: string): object {
     address: "123 Main Street",
     phone: "+1 (555) 000-0000",
     hours: "Daily: 11am – 10pm",
-    borderRadius: isDark ? "20" : "12",
+    borderRadius: "12",
     navLinks: DEFAULT_NAV_LINKS,
   };
 
