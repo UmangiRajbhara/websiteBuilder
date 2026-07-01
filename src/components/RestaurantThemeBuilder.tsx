@@ -872,12 +872,10 @@ export default function RestaurantThemeBuilder() {
               <button
                 onClick={generateFromPrompt}
                 disabled={aiLoading || !promptText.trim()}
-                className="w-full mt-2.5 py-2 text-[12px] font-semibold rounded-xl border-none transition-all duration-200 disabled:cursor-not-allowed"
+                className="w-full mt-2.5 py-2 text-[12px] font-semibold rounded-xl border-none transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
                 style={{
-                  background: promptText.trim() && !aiLoading
-                    ? `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`
-                    : design.colors.bg.tertiary,
-                  color: promptText.trim() && !aiLoading ? "#fff" : design.colors.text.muted,
+                  background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`,
+                  color: "#fff",
                   boxShadow: promptText.trim() && !aiLoading ? design.shadows.glow : "none",
                 }}
               >
