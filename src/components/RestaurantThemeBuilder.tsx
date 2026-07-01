@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ChevronDown, Palette, Type, Link2, Sparkles, Upload, Monitor, Smartphone, ChevronLeft, ChevronRight, Check, Loader2, X, Plus } from "lucide-react";
+import { ChevronDown, Palette, Type, Link2, Sparkles, Upload, Monitor, Smartphone, ChevronLeft, ChevronRight, Check, Loader2, X, Plus, Wand2, Eye, Globe, Settings } from "lucide-react";
 import SahlLogo from '../assets/logo-2.png';
 
 // Types
@@ -35,7 +35,6 @@ interface Theme {
   borderRadius: string;
   navLinks: NavLink[];
 }
-
 
 // Food keyword to Unsplash hero image
 const FOOD_IMAGES: Record<string, string> = {
@@ -409,26 +408,56 @@ footer a:hover{color:var(--ft)}
 </body></html>`;
 }
 
-// Get Supabase URL from environment
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+
+// Premium Design Tokens
+const design = {
+  colors: {
+    primary: "#0EA5A0",
+    primaryLight: "#5EEAD4",
+    primaryDark: "#0D9488",
+    accent: "#F59E0B",
+    bg: {
+      primary: "#F8FAFC",
+      secondary: "#FFFFFF",
+      tertiary: "#F1F5F9",
+    },
+    text: {
+      primary: "#0F172A",
+      secondary: "#475569",
+      muted: "#94A3B8",
+    },
+    border: "#E2E8F0",
+    success: "#10B981",
+  },
+  shadows: {
+    sm: "0 1px 2px 0 rgba(0,0,0,0.05)",
+    md: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)",
+    lg: "0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1)",
+    glow: "0 0 20px rgba(14, 165, 160, 0.25)",
+  },
+};
 
 // UI Components
 function ColorInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-xs font-medium text-gray-700">{label}</span>
-      <div className="flex items-center gap-1.5">
-        <input
-          type="color"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          className="w-7 h-7 border border-gray-200 rounded-md cursor-pointer p-0.5 bg-transparent"
-        />
+    <div className="flex items-center justify-between py-2 group">
+      <span className="text-[13px] font-medium text-slate-600 group-hover:text-slate-800 transition-colors duration-200">{label}</span>
+      <div className="flex items-center gap-2">
+        <div className="relative">
+          <input
+            type="color"
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            className="w-9 h-9 rounded-xl cursor-pointer appearance-none border-2 border-slate-200 hover:border-teal-400 transition-all duration-200"
+            style={{ backgroundColor: value, padding: 2 }}
+          />
+        </div>
         <input
           type="text"
           value={value}
           onChange={e => onChange(e.target.value)}
-          className="w-[72px] text-[11px] font-mono border border-gray-200 rounded px-1.5 py-0.5 text-gray-700 outline-none"
+          className="w-[76px] text-[12px] font-mono border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all duration-200"
         />
       </div>
     </div>
@@ -443,15 +472,15 @@ function TextInput({ label, value, onChange, multiline, placeholder }: {
   placeholder?: string;
 }) {
   return (
-    <div className="mb-2.5">
-      <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">{label}</label>
+    <div className="space-y-1.5">
+      <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">{label}</label>
       {multiline ? (
         <textarea
           value={value}
           onChange={e => onChange(e.target.value)}
           rows={2}
           placeholder={placeholder}
-          className="w-full text-xs border border-gray-200 rounded-md px-2 py-1.5 font-inherit text-gray-700 outline-none resize-vertical mt-1"
+          className="w-full text-[13px] border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-700 outline-none resize-none transition-all duration-200 focus:border-teal-500 focus:ring-3 focus:ring-teal-500/10 placeholder:text-slate-300"
         />
       ) : (
         <input
@@ -459,45 +488,52 @@ function TextInput({ label, value, onChange, multiline, placeholder }: {
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full text-xs border border-gray-200 rounded-md px-2 py-1.5 font-inherit text-gray-700 outline-none mt-1"
+          className="w-full text-[13px] border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-700 outline-none transition-all duration-200 focus:border-teal-500 focus:ring-3 focus:ring-teal-500/10 placeholder:text-slate-300"
         />
       )}
     </div>
   );
 }
 
-function Section({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+function Section({ title, children, defaultOpen = false, icon }: { title: string; children: React.ReactNode; defaultOpen?: boolean; icon?: React.ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-gray-100">
+    <div className="border-b border-slate-100/80 last:border-b-0">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full px-4 py-2.5 bg-transparent border-none flex justify-between items-center cursor-pointer text-xs font-bold text-gray-700 uppercase tracking-wider"
+        className="w-full px-5 py-3.5 bg-transparent border-none flex justify-between items-center cursor-pointer group"
       >
-        {title}
-        <ChevronDown size={16} className={`text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="flex items-center gap-2.5 text-[11px] font-semibold text-slate-600 uppercase tracking-wider group-hover:text-slate-800 transition-colors duration-200">
+          {icon && <span className="text-slate-400 group-hover:text-teal-500 transition-colors duration-200">{icon}</span>}
+          {title}
+        </span>
+        <ChevronDown size={14} className={`text-slate-400 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
       </button>
-      {open && <div className="px-4 pb-3.5">{children}</div>}
+      <div className={`grid transition-all duration-300 ease-in-out ${open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+        <div className="overflow-hidden">
+          <div className="px-5 pb-4">{children}</div>
+        </div>
+      </div>
     </div>
   );
 }
 
 function StepPill({ num, label, active, done }: { num: number; label: string; active: boolean; done: boolean }) {
-  const GREEN = "#00BA6A";
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       <div
-        className="w-[22px] h-[22px] rounded-full text-[11px] font-bold flex items-center justify-center shrink-0"
+        className="w-8 h-8 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 transition-all duration-300"
         style={{
-          background: done ? GREEN : active ? GREEN : "#e5e7eb",
-          color: done || active ? "#fff" : "#9ca3af",
+          background: done ? design.colors.success : active ? `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})` : design.colors.bg.tertiary,
+          color: done || active ? "#fff" : design.colors.text.muted,
+          boxShadow: active ? design.shadows.glow : "none",
         }}
       >
-        {done ? <Check size={12} /> : num}
+        {done ? <Check size={14} strokeWidth={3} /> : num}
       </div>
       <span
-        className="text-xs"
-        style={{ fontWeight: active ? 700 : 400, color: active ? GREEN : done ? "#6b7280" : "#9ca3af" }}
+        className="text-[12px] font-medium transition-colors duration-200"
+        style={{ color: active ? design.colors.primary : done ? design.colors.text.secondary : design.colors.text.muted }}
       >
         {label}
       </span>
@@ -505,7 +541,11 @@ function StepPill({ num, label, active, done }: { num: number; label: string; ac
   );
 }
 
-const GREEN = "#00BA6A";
+function StepConnector({ active }: { active: boolean }) {
+  return (
+    <div className="w-10 h-0.5 rounded-full transition-all duration-300" style={{ background: active ? design.colors.success : design.colors.border }} />
+  );
+}
 
 export default function RestaurantThemeBuilder() {
   const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
@@ -585,7 +625,6 @@ export default function RestaurantThemeBuilder() {
     });
   };
 
-  // Theme generation via Edge Function (preset-based, no AI API needed)
   const generateFromPrompt = async () => {
     if (!promptText.trim()) return;
     setAiLoading(true);
@@ -624,7 +663,6 @@ export default function RestaurantThemeBuilder() {
     }
   };
 
-  // Inject HTML into iframe
   useEffect(() => {
     if (!iframeRef.current) return;
     const doc = iframeRef.current.contentDocument;
@@ -642,305 +680,356 @@ export default function RestaurantThemeBuilder() {
   ];
 
   return (
-    <div className="font-sans h-screen flex flex-col bg-slate-50 overflow-hidden">
-      {/* Top bar */}
-      <div className="h-13 bg-white border-b border-gray-200 flex items-center justify-between px-4 py-2.5 shrink-0 z-20">
+    <div className="font-sans h-screen flex flex-col overflow-hidden" style={{ background: design.colors.bg.primary }}>
+      {/* Header */}
+      <header className="h-16 bg-white border-b flex items-center justify-between px-6 shrink-0 z-20" style={{ borderColor: design.colors.border, boxShadow: design.shadows.sm }}>
         {/* Brand */}
-        <div className="flex items-center gap-2">
-          <img src={SahlLogo} height={80} width={80}/>
-          <span className="text-gray-300">/</span>
-          <span className="text-[13px] text-gray-500">Website Builder</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <img src={SahlLogo} height={52} width={52} className="rounded-lg" />
+            <div className="flex flex-col">
+              <span className="text-[14px] font-bold text-slate-900 tracking-tight">Website Builder</span>
+              <span className="text-[10px] text-slate-400 font-medium">Restaurant Theme Studio</span>
+            </div>
+          </div>
         </div>
 
-        {/* Steps pipeline */}
-        <div className="flex items-center gap-2">
+        {/* Steps */}
+        <div className="flex items-center gap-1">
           {steps.map((s, i) => (
-            <div key={s.num} className="flex items-center gap-2">
+            <div key={s.num} className="flex items-center">
               <StepPill num={s.num} label={s.label} active={currentStep === s.num} done={currentStep > s.num} />
-              {i < steps.length - 1 && (
-                <div className="w-7 h-px" style={{ background: currentStep > s.num ? GREEN : "#e5e7eb" }} />
-              )}
+              {i < steps.length - 1 && <StepConnector active={currentStep > s.num} />}
             </div>
           ))}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          <div className="flex bg-gray-100 rounded-lg p-0.5">
+        {/* Actions */}
+        <div className="flex items-center gap-3">
+          <div className="flex bg-slate-100 rounded-xl p-1">
             <button
               onClick={() => setPreviewMode("desktop")}
-              className={`p-1 px-2.5 text-[13px] border-none cursor-pointer rounded-md ${previewMode === "desktop" ? "bg-white shadow text-gray-900" : "text-gray-500"}`}
+              className={`flex items-center gap-2 px-3.5 py-2 text-[12px] font-medium rounded-lg transition-all duration-200 ${
+                previewMode === "desktop" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
             >
-              <Monitor size={16} />
+              <Monitor size={15} />
+              Desktop
             </button>
             <button
               onClick={() => setPreviewMode("mobile")}
-              className={`p-1 px-2.5 text-[13px] border-none cursor-pointer rounded-md ${previewMode === "mobile" ? "bg-white shadow text-gray-900" : "text-gray-500"}`}
+              className={`flex items-center gap-2 px-3.5 py-2 text-[12px] font-medium rounded-lg transition-all duration-200 ${
+                previewMode === "mobile" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
             >
-              <Smartphone size={16} />
+              <Smartphone size={15} />
+              Mobile
             </button>
           </div>
 
           {currentStep === 1 && (
             <button
               onClick={() => setCurrentStep(2)}
-              className="text-white border-none rounded-lg py-1.5 px-4 text-[13px] font-bold cursor-pointer flex items-center gap-1"
-              style={{ background: GREEN }}
+              className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+              style={{ background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})` }}
             >
-              Approve & Continue <ChevronRight size={14} />
+              Approve & Continue
+              <ChevronRight size={16} />
             </button>
           )}
           {currentStep === 2 && (
-            <div className="flex gap-1.5">
+            <div className="flex gap-2">
               <button
                 onClick={() => setCurrentStep(1)}
-                className="bg-transparent border border-gray-200 text-gray-700 rounded-lg py-1.5 px-3.5 text-[13px] cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50"
+                style={{ borderColor: design.colors.border }}
               >
-                <ChevronLeft size={14} /> Back
+                <ChevronLeft size={14} />
+                Back
               </button>
               <button
                 onClick={() => setCurrentStep(3)}
-                className="text-white border-none rounded-lg py-1.5 px-4 text-[13px] font-bold cursor-pointer"
-                style={{ background: GREEN }}
+                className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+                style={{ background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})` }}
               >
-                Install Menu <ChevronRight size={14} />
+                Install Menu
+                <ChevronRight size={16} />
               </button>
             </div>
           )}
           {currentStep === 3 && (
-            <div className="flex gap-1.5">
+            <div className="flex gap-2">
               <button
                 onClick={() => setCurrentStep(2)}
-                className="bg-transparent border border-gray-200 text-gray-700 rounded-lg py-1.5 px-3.5 text-[13px] cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50"
+                style={{ borderColor: design.colors.border }}
               >
-                <ChevronLeft size={14} /> Back
+                <ChevronLeft size={14} />
+                Back
               </button>
               <button
                 onClick={() => setCurrentStep(4)}
-                className="text-white border-none rounded-lg py-1.5 px-4 text-[13px] font-bold cursor-pointer"
-                style={{ background: GREEN }}
+                className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+                style={{ background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})` }}
               >
-                Setup Checkout <ChevronRight size={14} />
+                Setup Checkout
+                <ChevronRight size={16} />
               </button>
             </div>
           )}
           {currentStep === 4 && (
-            <div className="flex gap-1.5">
+            <div className="flex gap-2">
               <button
                 onClick={() => setCurrentStep(3)}
-                className="bg-transparent border border-gray-200 text-gray-700 rounded-lg py-1.5 px-3.5 text-[13px] cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border rounded-xl transition-all duration-200 text-slate-600 hover:bg-slate-50"
+                style={{ borderColor: design.colors.border }}
               >
-                <ChevronLeft size={14} /> Back
+                <ChevronLeft size={14} />
+                Back
               </button>
-              <button className="bg-violet-600 text-white border-none rounded-lg py-1.5 px-4 text-[13px] font-bold cursor-pointer flex items-center gap-1">
+              <button className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-semibold text-white rounded-xl transition-all duration-200 hover:shadow-lg active:scale-[0.98] bg-gradient-to-r from-violet-500 to-purple-600">
+                <Globe size={16} />
                 Launch Site
               </button>
             </div>
           )}
         </div>
-      </div>
+      </header>
 
-      {/* Step info banners */}
+      {/* Step Banners */}
       {currentStep === 2 && (
-        <div className="bg-amber-50 border-b border-amber-200 py-2.5 px-5 flex items-center gap-3 shrink-0">
-          <span className="text-lg">📦</span>
-          <div>
-            <span className="font-bold text-amber-800 text-[13px]">Step 2 - Install Menu NPM Package</span>
-            <span className="ml-2.5 text-xs text-amber-700">
-              Run <code className="bg-amber-100 px-1.5 py-px rounded">npm install @sahl/menu-widget</code> in your project
-            </span>
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-b py-3.5 px-6 flex items-center gap-4 shrink-0" style={{ borderColor: "#FEF3C7" }}>
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+            <span className="text-xl">📦</span>
+          </div>
+          <div className="flex-1">
+            <div className="text-[13px] font-bold text-amber-900">Step 2 - Install Menu NPM Package</div>
+            <div className="text-[12px] text-amber-700 mt-0.5">
+              Run <code className="bg-amber-100/80 px-2 py-0.5 rounded text-amber-800 font-mono text-[11px]">npm install @sahl/menu-widget</code> in your project
+            </div>
           </div>
         </div>
       )}
       {currentStep === 3 && (
-        <div className="bg-blue-50 border-b border-blue-200 py-2.5 px-5 flex items-center gap-3 shrink-0">
-          <span className="text-lg">💳</span>
-          <div>
-            <span className="font-bold text-blue-800 text-[13px]">Step 3 - Setup Checkout</span>
-            <span className="ml-2.5 text-xs text-blue-600">
-              Run <code className="bg-blue-100 px-1.5 py-px rounded">npm install @sahl/checkout-widget</code> and configure payment
-            </span>
+        <div className="bg-gradient-to-r from-blue-50 to-sky-50 border-b py-3.5 px-6 flex items-center gap-4 shrink-0" style={{ borderColor: "#DBEAFE" }}>
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-400 to-sky-500 flex items-center justify-center shadow-md">
+            <span className="text-xl">💳</span>
+          </div>
+          <div className="flex-1">
+            <div className="text-[13px] font-bold text-blue-900">Step 3 - Setup Checkout</div>
+            <div className="text-[12px] text-blue-700 mt-0.5">
+              Run <code className="bg-blue-100/80 px-2 py-0.5 rounded text-blue-800 font-mono text-[11px]">npm install @sahl/checkout-widget</code> and configure payment
+            </div>
           </div>
         </div>
       )}
       {currentStep === 4 && (
-        <div className="bg-violet-50 border-b border-violet-200 py-2.5 px-5 flex items-center gap-3 shrink-0">
-          <span className="text-lg">🚀</span>
-          <div>
-            <span className="font-bold text-violet-800 text-[13px]">Step 4 - Launch to Client Domain</span>
-            <span className="ml-2.5 text-xs text-violet-600">Enter the client's domain below and deploy.</span>
+        <div className="bg-gradient-to-r from-violet-50 to-purple-50 border-b py-3.5 px-6 flex items-center gap-4 shrink-0" style={{ borderColor: "#EDE9FE" }}>
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-md">
+            <span className="text-xl">🚀</span>
           </div>
-          <div className="ml-auto flex gap-2 items-center">
+          <div className="flex-1">
+            <div className="text-[13px] font-bold text-violet-900">Step 4 - Launch to Client Domain</div>
+            <div className="text-[12px] text-violet-700 mt-0.5">Enter the client's domain below and deploy.</div>
+          </div>
+          <div className="flex gap-2.5 items-center">
             <input
               placeholder="client-domain.com"
-              className="text-xs border border-violet-200 rounded-md px-2.5 py-1.5 outline-none text-gray-700"
+              className="text-[13px] border rounded-xl px-4 py-2.5 outline-none w-60 transition-all duration-200 focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400"
+              style={{ borderColor: "#DDD6FE" }}
             />
-            <button className="bg-violet-600 text-white border-none rounded-md py-1.5 px-3.5 text-xs font-bold cursor-pointer">
+            <button className="px-5 py-2.5 text-[12px] font-semibold text-white rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 shadow-md hover:shadow-lg transition-all duration-200">
               Deploy
             </button>
           </div>
         </div>
       )}
 
-      {/* Body */}
+      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left panel (only shown in step 1) */}
+        {/* Left Panel */}
         {currentStep === 1 && (
-          <div className="w-[308px] min-w-[308px] bg-white border-r border-gray-200 flex flex-col overflow-hidden">
+          <div className="w-[350px] min-w-[350px] bg-white border-r flex flex-col overflow-hidden" style={{ borderColor: design.colors.border }}>
             {/* Theme Generator */}
-            <div className="px-3.5 py-3 border-b border-gray-100 bg-gray-50 shrink-0">
-              <div className="flex items-center gap-1.5 mb-2">
-                <div className="w-[18px] h-[18px] rounded flex items-center justify-center" style={{ background: GREEN }}>
-                  <Sparkles size={10} className="text-white" />
+            <div className="px-5 py-5 border-b shrink-0" style={{ borderColor: design.colors.border, background: `linear-gradient(180deg, ${design.colors.bg.secondary} 0%, ${design.colors.bg.tertiary} 100%)` }}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2.5 rounded-xl" style={{ background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`, boxShadow: design.shadows.glow }}>
+                  <Wand2 size={18} className="text-white" />
                 </div>
-                <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wide">Quick Theme Generator</span>
+                <div>
+                  <div className="text-[13px] font-bold text-slate-800">Quick Theme Generator</div>
+                  <div className="text-[10px] text-slate-400">Describe your restaurant style</div>
+                </div>
               </div>
               <textarea
                 value={promptText}
                 onChange={e => setPromptText(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) generateFromPrompt(); }}
-                placeholder="Try: pizza rustic, sushi elegant, burger modern, tacos authentic..."
+                placeholder="Try: pizza rustic, sushi elegant, burger modern, vadapav minimal..."
                 rows={3}
-                className="w-full text-xs border border-gray-200 rounded-lg px-2.5 py-2 resize-none outline-none text-gray-700 leading-relaxed focus:border-emerald-400"
+                className="w-full text-[13px] border rounded-xl px-4 py-3 resize-none outline-none transition-all duration-200 focus:border-teal-500 focus:ring-3 focus:ring-teal-500/10 placeholder:text-slate-400"
+                style={{ borderColor: design.colors.border }}
               />
               <button
                 onClick={generateFromPrompt}
                 disabled={aiLoading || !promptText.trim()}
-                className="w-full mt-1.5 py-2 text-xs font-bold rounded-lg border-none text-white disabled:bg-emerald-100 cursor-pointer"
-                style={{ background: promptText.trim() && !aiLoading ? GREEN : "#d1fae5" }}
+                className="w-full mt-3 py-3 text-[13px] font-semibold rounded-xl border-none transition-all duration-200 disabled:cursor-not-allowed"
+                style={{
+                  background: promptText.trim() && !aiLoading
+                    ? `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`
+                    : design.colors.bg.tertiary,
+                  color: promptText.trim() && !aiLoading ? "#fff" : design.colors.text.muted,
+                  boxShadow: promptText.trim() && !aiLoading ? design.shadows.glow : "none",
+                }}
               >
                 {aiLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <Loader2 size={14} className="animate-spin" /> Applying...
+                    <Loader2 size={16} className="animate-spin" />
+                    Applying Theme...
                   </span>
                 ) : (
-                  "Apply Preset"
+                  <span className="flex items-center justify-center gap-2">
+                    <Sparkles size={16} />
+                    Apply Preset
+                  </span>
                 )}
               </button>
-              {aiError && <p className="text-[11px] text-red-500 mt-1.5">{aiError}</p>}
+              {aiError && (
+                <div className="mt-3 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl text-[12px] text-red-600">
+                  {aiError}
+                </div>
+              )}
             </div>
 
-            {/* Tab nav */}
-            <div className="flex border-b border-gray-200 shrink-0">
+            {/* Tabs */}
+            <div className="flex border-b shrink-0" style={{ borderColor: design.colors.border }}>
               {[
-                ["design", <><Palette size={12} className="inline mr-1" /> Design</>],
-                ["content", <><Type size={12} className="inline mr-1" /> Content</>],
-                ["nav", <><Link2 size={12} className="inline mr-1" /> Nav</>],
-              ].map(([id, label]) => (
+                { id: "design", label: "Design", icon: <Palette size={14} /> },
+                { id: "content", label: "Content", icon: <Type size={14} /> },
+                { id: "nav", label: "Nav", icon: <Link2 size={14} /> },
+              ].map(({ id, label, icon }) => (
                 <button
-                  key={id as string}
+                  key={id}
                   onClick={() => setActiveTab(id as "design" | "content" | "nav")}
-                  className="flex-1 py-2 border-none bg-transparent text-[11px] cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 border-none bg-transparent text-[12px] font-medium transition-all duration-200"
                   style={{
-                    fontWeight: activeTab === id ? 700 : 400,
-                    color: activeTab === id ? GREEN : "#6b7280",
-                    borderBottom: activeTab === id ? `2px solid ${GREEN}` : "2px solid transparent",
+                    color: activeTab === id ? design.colors.primary : design.colors.text.muted,
+                    borderBottom: activeTab === id ? `2px solid ${design.colors.primary}` : "2px solid transparent",
                   }}
                 >
+                  {icon}
                   {label}
                 </button>
               ))}
             </div>
 
-            {/* Tab content */}
+            {/* Tab Content */}
             <div className="flex-1 overflow-y-auto">
               {activeTab === "design" && (
-                <>
-                  <Section title="Logo" defaultOpen={true}>
-                    <div className="flex items-center gap-2.5 mb-2.5">
-                      <div className="w-13 h-13 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden shrink-0">
+                <div>
+                  <Section title="Logo" defaultOpen={true} icon={<Upload size={12} />}>
+                    <div className="flex items-center gap-4">
+                      <div
+                        className="w-16 h-16 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden shrink-0 transition-all duration-200 hover:border-teal-500"
+                        style={{ borderColor: design.colors.border, background: theme.logoUrl ? "transparent" : design.colors.bg.tertiary }}
+                      >
                         {theme.logoUrl ? (
                           <img src={theme.logoUrl} alt="logo" className="w-full h-full object-contain" />
                         ) : (
-                          <span className="text-[22px]">🏪</span>
+                          <span className="text-2xl">🏪</span>
                         )}
                       </div>
                       <div className="flex-1">
                         <button
                           onClick={() => logoInputRef.current?.click()}
-                          className="w-full py-1.5 bg-gray-100 border border-gray-200 rounded-lg text-xs text-gray-700 font-semibold cursor-pointer mb-1 flex items-center justify-center gap-1"
+                          className="w-full py-2.5 border rounded-xl text-[12px] font-medium transition-all duration-200 flex items-center justify-center gap-2 hover:bg-slate-50 hover:border-teal-300"
+                          style={{ borderColor: design.colors.border, color: design.colors.text.secondary }}
                         >
-                          <Upload size={12} /> {theme.logoUrl ? "Replace Logo" : "Upload Logo"}
+                          <Upload size={14} />
+                          {theme.logoUrl ? "Replace Logo" : "Upload Logo"}
                         </button>
                         {theme.logoUrl && (
                           <button
                             onClick={() => update("logoUrl", "")}
-                            className="w-full py-1 bg-transparent border border-red-200 rounded-lg text-[11px] text-red-500 cursor-pointer"
+                            className="w-full mt-2 py-2 border border-red-200 rounded-xl text-[12px] text-red-500 font-medium transition-all duration-200 hover:bg-red-50"
                           >
                             Remove
                           </button>
                         )}
                       </div>
                     </div>
-                    <p className="text-[11px] text-gray-400">PNG or SVG recommended. Max 2MB.</p>
+                    <p className="text-[11px] text-slate-400 mt-3">PNG or SVG recommended. Max 2MB.</p>
                     <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                   </Section>
 
-                  <Section title="Brand Colors" defaultOpen={true}>
-                    <ColorInput label="Primary" value={theme.primaryColor} onChange={v => update("primaryColor", v)} />
-                    <ColorInput label="Secondary" value={theme.secondaryColor} onChange={v => update("secondaryColor", v)} />
-                    <ColorInput label="Accent/CTA" value={theme.accentColor} onChange={v => update("accentColor", v)} />
-                    <ColorInput label="Background" value={theme.bgColor} onChange={v => update("bgColor", v)} />
-                    <ColorInput label="Text" value={theme.textColor} onChange={v => update("textColor", v)} />
+                  <Section title="Brand Colors" defaultOpen={true} icon={<Palette size={12} />}>
+                    <div className="space-y-1">
+                      <ColorInput label="Primary" value={theme.primaryColor} onChange={v => update("primaryColor", v)} />
+                      <ColorInput label="Secondary" value={theme.secondaryColor} onChange={v => update("secondaryColor", v)} />
+                      <ColorInput label="Accent / CTA" value={theme.accentColor} onChange={v => update("accentColor", v)} />
+                      <ColorInput label="Background" value={theme.bgColor} onChange={v => update("bgColor", v)} />
+                      <ColorInput label="Text" value={theme.textColor} onChange={v => update("textColor", v)} />
+                    </div>
                   </Section>
 
-                  <Section title="Header / Nav" defaultOpen={false}>
+                  <Section title="Header & Navigation" defaultOpen={false} icon={<Settings size={12} />}>
                     <ColorInput label="Nav background" value={theme.navBg} onChange={v => update("navBg", v)} />
                     <ColorInput label="Nav text" value={theme.navText} onChange={v => update("navText", v)} />
                   </Section>
 
-                  <Section title="Hero Banner Image" defaultOpen={false}>
-                    <div className="mb-2.5">
-                      <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block mb-1.5">
-                        Upload custom image(s)
-                      </label>
-                      <div
-                        className="w-full h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden cursor-pointer flex items-center justify-center relative"
-                        style={{ background: theme.heroImages.length > 0 ? "none" : "#f9fafb" }}
-                        onClick={(e) => {
-                          if ((e.target as HTMLElement).closest('.remove-btn')) return;
-                          heroImageInputRef.current?.click();
-                        }}
-                      >
-                        {theme.heroImages.length > 0 ? (
-                          <div className="flex w-full h-full overflow-x-auto gap-1 p-1">
-                            {theme.heroImages.map((img, idx) => (
-                              <div key={idx} className="relative h-full w-20 shrink-0">
-                                <img src={img} alt="hero" className="w-full h-full object-cover rounded" />
-                                <button
-                                  className="remove-btn absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow cursor-pointer text-red-500 border-none flex"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    update("heroImages", theme.heroImages.filter((_, i) => i !== idx));
-                                  }}
-                                >
-                                  <X size={12} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-gray-400">Click to upload hero image(s)</span>
-                        )}
-                      </div>
-                      <input ref={heroImageInputRef} type="file" accept="image/*" multiple onChange={handleHeroImageUpload} className="hidden" />
+                  <Section title="Hero Images" defaultOpen={false} icon={<Eye size={12} />}>
+                    <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">
+                      Upload custom image(s)
+                    </label>
+                    <div
+                      className="w-full h-28 rounded-xl border-2 border-dashed overflow-hidden cursor-pointer flex items-center justify-center relative transition-all duration-200 hover:border-teal-500"
+                      style={{ borderColor: design.colors.border, background: theme.heroImages.length > 0 ? "transparent" : design.colors.bg.tertiary }}
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('.remove-btn')) return;
+                        heroImageInputRef.current?.click();
+                      }}
+                    >
+                      {theme.heroImages.length > 0 ? (
+                        <div className="flex w-full h-full overflow-x-auto gap-2 p-2">
+                          {theme.heroImages.map((img, idx) => (
+                            <div key={idx} className="relative h-full w-28 shrink-0">
+                              <img src={img} alt="hero" className="w-full h-full object-cover rounded-lg" />
+                              <button
+                                className="remove-btn absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full shadow-lg flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors duration-200"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  update("heroImages", theme.heroImages.filter((_, i) => i !== idx));
+                                }}
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <Upload size={28} className="mx-auto mb-2 text-slate-300" />
+                          <span className="text-[12px] text-slate-400">Click to upload hero image(s)</span>
+                        </div>
+                      )}
                     </div>
+                    <input ref={heroImageInputRef} type="file" accept="image/*" multiple onChange={handleHeroImageUpload} className="hidden" />
 
                     {theme.heroImages.length === 0 && (
-                      <div>
-                        <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block mb-1.5">
+                      <div className="mt-4">
+                        <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-2.5">
                           Or pick food keyword
                         </label>
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-2">
                           {FOOD_KEYWORDS.map(kw => (
                             <button
                               key={kw}
                               onClick={() => update("heroFoodKeyword", kw)}
-                              className="px-2.5 py-1 text-[11px] rounded-full cursor-pointer font-medium border"
+                              className="px-3.5 py-1.5 text-[11px] rounded-full font-medium capitalize transition-all duration-200"
                               style={{
-                                background: theme.heroFoodKeyword === kw ? GREEN : "#f3f4f6",
-                                color: theme.heroFoodKeyword === kw ? "#fff" : "#374151",
-                                borderColor: theme.heroFoodKeyword === kw ? GREEN : "#e5e7eb",
+                                background: theme.heroFoodKeyword === kw ? design.colors.primary : design.colors.bg.tertiary,
+                                color: theme.heroFoodKeyword === kw ? "#fff" : design.colors.text.secondary,
+                                boxShadow: theme.heroFoodKeyword === kw ? design.shadows.glow : "none",
                               }}
                             >
                               {kw}
@@ -951,43 +1040,47 @@ export default function RestaurantThemeBuilder() {
                     )}
                   </Section>
 
-                  <Section title="Footer" defaultOpen={false}>
+                  <Section title="Footer" defaultOpen={false} icon={<Settings size={12} />}>
                     <ColorInput label="Footer background" value={theme.footerBg} onChange={v => update("footerBg", v)} />
                     <ColorInput label="Footer text" value={theme.footerText} onChange={v => update("footerText", v)} />
                   </Section>
 
-                  <Section title="Typography" defaultOpen={false}>
-                    <div className="mb-2.5">
-                      <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Display font</label>
-                      <select
-                        value={theme.fontDisplay}
-                        onChange={e => update("fontDisplay", e.target.value)}
-                        className="w-full text-xs border border-gray-200 rounded-md px-2 py-1.5 mt-1 text-gray-700 outline-none"
-                      >
-                        {["Playfair Display", "Cormorant Garamond", "DM Serif Display", "Fraunces", "Libre Baskerville", "Josefin Sans", "Raleway", "Oswald", "Bebas Neue", "Syne"].map(f => (
-                          <option key={f} value={f}>{f}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Body font</label>
-                      <select
-                        value={theme.fontBody}
-                        onChange={e => update("fontBody", e.target.value)}
-                        className="w-full text-xs border border-gray-200 rounded-md px-2 py-1.5 mt-1 text-gray-700 outline-none"
-                      >
-                        {["Inter", "DM Sans", "Nunito", "Lato", "Poppins", "Source Sans 3", "Roboto", "Open Sans", "Manrope", "Plus Jakarta Sans"].map(f => (
-                          <option key={f} value={f}>{f}</option>
-                        ))}
-                      </select>
+                  <Section title="Typography" defaultOpen={false} icon={<Type size={12} />}>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Display font</label>
+                        <select
+                          value={theme.fontDisplay}
+                          onChange={e => update("fontDisplay", e.target.value)}
+                          className="w-full text-[13px] border rounded-xl px-3.5 py-2.5 mt-1.5 outline-none transition-all duration-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                          style={{ borderColor: design.colors.border, color: design.colors.text.primary }}
+                        >
+                          {["Playfair Display", "Cormorant Garamond", "DM Serif Display", "Fraunces", "Libre Baskerville", "Josefin Sans", "Raleway", "Oswald", "Bebas Neue", "Syne"].map(f => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Body font</label>
+                        <select
+                          value={theme.fontBody}
+                          onChange={e => update("fontBody", e.target.value)}
+                          className="w-full text-[13px] border rounded-xl px-3.5 py-2.5 mt-1.5 outline-none transition-all duration-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                          style={{ borderColor: design.colors.border, color: design.colors.text.primary }}
+                        >
+                          {["Inter", "DM Sans", "Nunito", "Lato", "Poppins", "Source Sans 3", "Roboto", "Open Sans", "Manrope", "Plus Jakarta Sans"].map(f => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </Section>
 
-                  <Section title="Roundness" defaultOpen={false}>
-                    <div className="py-1">
-                      <div className="flex justify-between mb-1.5">
-                        <span className="text-xs text-gray-700">Border radius</span>
-                        <span className="text-xs font-bold" style={{ color: GREEN }}>{theme.borderRadius}px</span>
+                  <Section title="Roundness" defaultOpen={false} icon={<Settings size={12} />}>
+                    <div className="py-2">
+                      <div className="flex justify-between mb-2.5">
+                        <span className="text-[13px] text-slate-600">Border radius</span>
+                        <span className="text-[13px] font-bold" style={{ color: design.colors.primary }}>{theme.borderRadius}px</span>
                       </div>
                       <input
                         type="range"
@@ -995,74 +1088,85 @@ export default function RestaurantThemeBuilder() {
                         max="24"
                         value={theme.borderRadius}
                         onChange={e => update("borderRadius", e.target.value)}
-                        className="w-full"
-                        style={{ accentColor: GREEN }}
+                        className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                        style={{ accentColor: design.colors.primary }}
                       />
-                      <div className="flex justify-between text-[10px] text-gray-400 mt-0.5">
+                      <div className="flex justify-between text-[11px] text-slate-400 mt-2">
                         <span>Sharp</span>
                         <span>Rounded</span>
                       </div>
                     </div>
                   </Section>
-                </>
+                </div>
               )}
 
               {activeTab === "content" && (
-                <div className="px-4 py-3">
+                <div className="px-5 py-5 space-y-4">
                   <TextInput label="Restaurant name" value={theme.siteName} onChange={v => update("siteName", v)} />
                   <TextInput label="Tagline" value={theme.tagline} onChange={v => update("tagline", v)} />
                   <TextInput label="Hero headline" value={theme.heroHeadline} onChange={v => update("heroHeadline", v)} />
                   <TextInput label="Hero subline" value={theme.heroSubline} onChange={v => update("heroSubline", v)} multiline />
                   <TextInput label="CTA button text" value={theme.ctaText} onChange={v => update("ctaText", v)} />
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Footer / Contact info</p>
-                    <TextInput label="Address" value={theme.address} onChange={v => update("address", v)} />
-                    <TextInput label="Phone" value={theme.phone} onChange={v => update("phone", v)} />
-                    <TextInput label="Hours" value={theme.hours} onChange={v => update("hours", v)} />
+                  <div className="pt-5 mt-5 border-t" style={{ borderColor: design.colors.border }}>
+                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-4">Footer / Contact Info</div>
+                    <div className="space-y-4">
+                      <TextInput label="Address" value={theme.address} onChange={v => update("address", v)} />
+                      <TextInput label="Phone" value={theme.phone} onChange={v => update("phone", v)} />
+                      <TextInput label="Hours" value={theme.hours} onChange={v => update("hours", v)} />
+                    </div>
                   </div>
                 </div>
               )}
 
               {activeTab === "nav" && (
-                <div className="px-4 py-3">
-                  <p className="text-[11px] text-gray-400 mb-3 leading-relaxed">
-                    Set the label and destination URL for each nav link. Use <code className="bg-gray-100 px-1 rounded">#section-id</code> for same-page anchors or a full URL for external pages.
+                <div className="px-5 py-5">
+                  <p className="text-[12px] text-slate-400 mb-4 leading-relaxed">
+                    Set the label and destination URL for each nav link. Use <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 text-[11px]">#section-id</code> for same-page anchors.
                   </p>
                   {(theme.navLinks || []).map((link, idx) => (
-                    <div key={idx} className="bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-2.5 mb-2 relative">
+                    <div key={idx} className="bg-slate-50 border rounded-xl px-4 py-4 mb-3 relative transition-all duration-200 hover:bg-slate-100" style={{ borderColor: design.colors.border }}>
                       <button
                         onClick={() => removeNavLink(idx)}
-                        className="absolute top-1.5 right-2 bg-transparent border-none text-gray-300 cursor-pointer"
+                        className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
                       >
-                        <X size={15} />
+                        <X size={16} />
                       </button>
-                      <div className="mb-1.5">
-                        <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Label</label>
-                        <input
-                          type="text"
-                          value={link.label}
-                          onChange={e => updateNavLink(idx, "label", e.target.value)}
-                          className="w-full text-xs border border-gray-200 rounded px-1.5 py-1 text-gray-700 outline-none mt-0.5"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Link / URL</label>
-                        <input
-                          type="text"
-                          value={link.href}
-                          onChange={e => updateNavLink(idx, "href", e.target.value)}
-                          placeholder="#section or https://..."
-                          className="w-full text-xs border border-gray-200 rounded px-1.5 py-1 font-mono text-gray-700 outline-none mt-0.5"
-                        />
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Label</label>
+                          <input
+                            type="text"
+                            value={link.label}
+                            onChange={e => updateNavLink(idx, "label", e.target.value)}
+                            className="w-full text-[13px] border rounded-xl px-3 py-2 mt-1 outline-none transition-all duration-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                            style={{ borderColor: design.colors.border, color: design.colors.text.primary }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Link / URL</label>
+                          <input
+                            type="text"
+                            value={link.href}
+                            onChange={e => updateNavLink(idx, "href", e.target.value)}
+                            placeholder="#section or https://..."
+                            className="w-full text-[12px] font-mono border rounded-xl px-3 py-2 mt-1 outline-none transition-all duration-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                            style={{ borderColor: design.colors.border, color: design.colors.text.primary }}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
                   <button
                     onClick={addNavLink}
-                    className="w-full py-2 text-xs font-semibold bg-emerald-50 rounded-lg cursor-pointer flex items-center justify-center gap-1"
-                    style={{ border: `1px dashed ${GREEN}`, color: GREEN }}
+                    className="w-full py-3 text-[12px] font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-md"
+                    style={{
+                      border: `2px dashed ${design.colors.primary}`,
+                      color: design.colors.primary,
+                      background: design.colors.bg.tertiary,
+                    }}
                   >
-                    <Plus size={14} /> Add nav link
+                    <Plus size={16} />
+                    Add nav link
                   </button>
                 </div>
               )}
@@ -1070,40 +1174,45 @@ export default function RestaurantThemeBuilder() {
           </div>
         )}
 
-        {/* Right: live preview */}
-        <div className="flex-1 bg-gray-200 flex flex-col overflow-hidden">
-          {/* Preview toolbar */}
-          <div className="bg-white border-b border-gray-200 px-3.5 h-10 flex items-center justify-between shrink-0">
-            <div className="flex gap-1.5 items-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-              <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-              <div className="ml-2 bg-gray-100 rounded-md px-3.5 py-0.5 text-[11px] text-gray-500">
+        {/* Preview */}
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: design.colors.bg.tertiary }}>
+          {/* Toolbar */}
+          <div className="bg-white border-b px-5 h-12 flex items-center justify-between shrink-0" style={{ borderColor: design.colors.border }}>
+            <div className="flex items-center gap-3">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-amber-400" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+              </div>
+              <div className="ml-2 bg-slate-100 rounded-lg px-4 py-1.5 text-[11px] text-slate-500 font-mono">
                 {theme.siteName?.toLowerCase().replace(/\s+/g, "-")}.sahl.app
               </div>
             </div>
-            <span className="text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full px-2 py-0.5">
-              {previewMode === "desktop" ? "Desktop" : "Mobile"} - Live preview
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-semibold px-3 py-1.5 rounded-full" style={{ color: design.colors.primary, background: "rgba(14, 165, 160, 0.1)" }}>
+                {previewMode === "desktop" ? "Desktop" : "Mobile"} Preview
+              </span>
+              <Eye size={16} className="text-slate-400" />
+            </div>
           </div>
 
-          {/* iframe wrapper */}
+          {/* Iframe */}
           <div
-            className="flex-1 flex overflow-hidden p-3"
+            className="flex-1 flex overflow-hidden p-5"
             style={{
               alignItems: previewMode === "mobile" ? "center" : "stretch",
               justifyContent: previewMode === "mobile" ? "center" : "stretch",
             }}
           >
             <div
-              className="bg-white overflow-hidden shrink-0"
+              className="bg-white overflow-hidden shrink-0 transition-all duration-300"
               style={{
                 width: previewMode === "mobile" ? 375 : "100%",
                 height: previewMode === "mobile" ? 700 : "100%",
-                borderRadius: previewMode === "mobile" ? 28 : 8,
+                borderRadius: previewMode === "mobile" ? 36 : 16,
                 boxShadow: previewMode === "mobile"
-                  ? "0 24px 64px rgba(0,0,0,0.3), 0 0 0 10px #1f2937, 0 0 0 11px #374151"
-                  : "0 2px 16px rgba(0,0,0,0.08)",
+                  ? "0 40px 80px rgba(0,0,0,0.25), 0 0 0 14px #1e293b, 0 0 0 16px #334155"
+                  : design.shadows.lg,
               }}
             >
               <iframe
