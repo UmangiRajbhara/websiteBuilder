@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-ignore: the jsr prefix is understood by Deno but not by standard TypeScript/Node
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const corsHeaders = {
@@ -748,6 +750,7 @@ function generateTheme(prompt: string): object {
   return fallbackTheme;
 }
 
+// @ts-ignore: Deno is a global available in the Supabase Edge Runtime
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });

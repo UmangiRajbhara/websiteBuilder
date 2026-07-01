@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronDown, Palette, Type, Link2, Sparkles, Upload, Monitor, Smartphone, ChevronLeft, ChevronRight, Check, Loader2, X, Plus } from "lucide-react";
+import SahlLogo from '../assets/logo-2.png';
 
 // Types
 interface NavLink {
@@ -25,7 +27,7 @@ interface Theme {
   heroHeadline: string;
   heroSubline: string;
   heroFoodKeyword: string;
-  heroImageUrl: string;
+  heroImages: string[];
   ctaText: string;
   address: string;
   phone: string;
@@ -78,7 +80,7 @@ const DEFAULT_THEME: Theme = {
   heroHeadline: "Pizza Made With Passion",
   heroSubline: "Every slice tells a story — from Naples to your table.",
   heroFoodKeyword: "pizza",
-  heroImageUrl: "",
+  heroImages: [],
   ctaText: "Order Now",
   address: "12 Olive Street, Downtown",
   phone: "+1 (555) 123-4567",
@@ -95,7 +97,7 @@ const DEFAULT_THEME: Theme = {
 function buildHTML(t: Theme): string {
   const gf = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(t.fontDisplay)}:wght@400;700;900&family=${encodeURIComponent(t.fontBody)}:wght@300;400;600&display=swap`;
   const r = t.borderRadius || "12";
-  const heroImg = t.heroImageUrl || getHeroImage(t.heroFoodKeyword);
+  const heroImages = t.heroImages && t.heroImages.length > 0 ? t.heroImages : [getHeroImage(t.heroFoodKeyword)];
 
   const navLinksHTML = (t.navLinks || []).map(l =>
     `<a href="${l.href || "#"}">${l.label}</a>`
@@ -153,9 +155,47 @@ nav{
   display:flex;align-items:center;justify-content:center;text-align:center;
   overflow:hidden;
 }
-.hero-bg{
+.hero-slider {
   position:absolute;inset:0;
-  background:url('${heroImg}') center/cover no-repeat;
+  overflow:hidden;
+  background:#000;
+}
+.hero-slide {
+  position:absolute;inset:0;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  opacity:0;
+  transform:scale(1.05);
+  transition:opacity 1.5s ease-in-out, transform 6s linear;
+  z-index:0;
+}
+.hero-slide.active {
+  opacity:1;
+  transform:scale(1);
+}
+.hero-dots {
+  position:absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+.hero-dot {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  border: none;
+  background: rgba(255,255,255,0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+.hero-dot.active {
+  background: #fff;
+  width: 48px;
 }
 .hero-overlay{
   position:absolute;inset:0;
@@ -269,8 +309,15 @@ footer a:hover{color:var(--ft)}
 </nav>
 
 <section class="hero" id="home">
-  <div class="hero-bg"></div>
+  <div class="hero-slider">
+    ${heroImages.map((img, i) => `<div class="hero-slide ${i === 0 ? 'active' : ''}" style="background-image: url('${img}')"></div>`).join('')}
+  </div>
   <div class="hero-overlay"></div>
+  ${heroImages.length > 1 ? `
+  <div class="hero-dots">
+    ${heroImages.map((_, i) => `<button class="hero-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></button>`).join('')}
+  </div>
+  ` : ''}
   <div class="hero-content">
     <div class="hero-eyebrow">${t.siteName}</div>
     <h1>${t.heroHeadline}</h1>
@@ -322,13 +369,42 @@ footer a:hover{color:var(--ft)}
 </footer>
 
 <script>
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      e.preventDefault();
-      const el = document.querySelector(a.getAttribute('href'));
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+  (() => {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    if (slides.length > 1) {
+      let currentSlide = 0;
+      let timer;
+
+      const goToSlide = (idx) => {
+        slides[currentSlide].classList.remove('active');
+        if(dots[currentSlide]) dots[currentSlide].classList.remove('active');
+        currentSlide = idx;
+        slides[currentSlide].classList.add('active');
+        if(dots[currentSlide]) dots[currentSlide].classList.add('active');
+      };
+
+      const nextSlide = () => goToSlide((currentSlide + 1) % slides.length);
+
+      timer = setInterval(nextSlide, 4000);
+
+      dots.forEach((dot, idx) => {
+        dot.addEventListener('click', () => {
+          clearInterval(timer);
+          goToSlide(idx);
+          timer = setInterval(nextSlide, 4000);
+        });
+      });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const el = document.querySelector(a.getAttribute('href'));
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      });
     });
-  });
+  })();
 </script>
 </body></html>`;
 }
@@ -444,7 +520,7 @@ export default function RestaurantThemeBuilder() {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const heroImageInputRef = useRef<HTMLInputElement>(null);
 
-  const update = useCallback((key: keyof Theme, val: string | NavLink[]) => {
+  const update = useCallback((key: keyof Theme, val: any) => {
     setTheme(prev => {
       const next = { ...prev, [key]: val };
       setHtmlString(buildHTML(next));
@@ -488,11 +564,25 @@ export default function RestaurantThemeBuilder() {
   };
 
   const handleHeroImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => update("heroImageUrl", ev.target?.result as string);
-    reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newImages = [...theme.heroImages];
+    let loadedCount = 0;
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) {
+          newImages.push(ev.target.result as string);
+        }
+        loadedCount++;
+        if (loadedCount === files.length) {
+          update("heroImages", newImages);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   // Theme generation via Edge Function (preset-based, no AI API needed)
@@ -504,7 +594,11 @@ export default function RestaurantThemeBuilder() {
     try {
       const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-theme`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
         body: JSON.stringify({ prompt: promptText }),
       });
 
@@ -518,7 +612,7 @@ export default function RestaurantThemeBuilder() {
       const merged: Theme = {
         ...parsed,
         logoUrl: theme.logoUrl,
-        heroImageUrl: theme.heroImageUrl,
+        heroImages: theme.heroImages,
         navLinks: parsed.navLinks || DEFAULT_THEME.navLinks,
       };
       setTheme(merged);
@@ -550,13 +644,10 @@ export default function RestaurantThemeBuilder() {
   return (
     <div className="font-sans h-screen flex flex-col bg-slate-50 overflow-hidden">
       {/* Top bar */}
-      <div className="h-13 bg-white border-b border-gray-200 flex items-center justify-between px-4 shrink-0 z-20">
+      <div className="h-13 bg-white border-b border-gray-200 flex items-center justify-between px-4 py-2.5 shrink-0 z-20">
         {/* Brand */}
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: GREEN }}>
-            <span className="text-white text-sm font-extrabold">5</span>
-          </div>
-          <span className="font-extrabold text-sm text-gray-900">Sahl</span>
+          <img src={SahlLogo} height={80} width={80}/>
           <span className="text-gray-300">/</span>
           <span className="text-[13px] text-gray-500">Website Builder</span>
         </div>
@@ -801,31 +892,41 @@ export default function RestaurantThemeBuilder() {
                   <Section title="Hero Banner Image" defaultOpen={false}>
                     <div className="mb-2.5">
                       <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block mb-1.5">
-                        Upload custom image
+                        Upload custom image(s)
                       </label>
                       <div
-                        className="w-full h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden cursor-pointer flex items-center justify-center"
-                        style={{ background: theme.heroImageUrl ? "none" : "#f9fafb" }}
-                        onClick={() => heroImageInputRef.current?.click()}
+                        className="w-full h-20 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden cursor-pointer flex items-center justify-center relative"
+                        style={{ background: theme.heroImages.length > 0 ? "none" : "#f9fafb" }}
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest('.remove-btn')) return;
+                          heroImageInputRef.current?.click();
+                        }}
                       >
-                        {theme.heroImageUrl ? (
-                          <img src={theme.heroImageUrl} alt="hero" className="w-full h-full object-cover" />
+                        {theme.heroImages.length > 0 ? (
+                          <div className="flex w-full h-full overflow-x-auto gap-1 p-1">
+                            {theme.heroImages.map((img, idx) => (
+                              <div key={idx} className="relative h-full w-20 shrink-0">
+                                <img src={img} alt="hero" className="w-full h-full object-cover rounded" />
+                                <button
+                                  className="remove-btn absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow cursor-pointer text-red-500 border-none flex"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    update("heroImages", theme.heroImages.filter((_, i) => i !== idx));
+                                  }}
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         ) : (
-                          <span className="text-xs text-gray-400">Click to upload hero image</span>
+                          <span className="text-xs text-gray-400">Click to upload hero image(s)</span>
                         )}
                       </div>
-                      {theme.heroImageUrl && (
-                        <button
-                          onClick={() => update("heroImageUrl", "")}
-                          className="mt-1 text-[11px] text-red-500 bg-transparent border border-red-200 rounded-md px-2.5 py-1 cursor-pointer"
-                        >
-                          Remove custom image
-                        </button>
-                      )}
-                      <input ref={heroImageInputRef} type="file" accept="image/*" onChange={handleHeroImageUpload} className="hidden" />
+                      <input ref={heroImageInputRef} type="file" accept="image/*" multiple onChange={handleHeroImageUpload} className="hidden" />
                     </div>
 
-                    {!theme.heroImageUrl && (
+                    {theme.heroImages.length === 0 && (
                       <div>
                         <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block mb-1.5">
                           Or pick food keyword
