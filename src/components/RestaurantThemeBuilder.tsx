@@ -444,13 +444,12 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
     <div className="flex items-center justify-between py-2 group">
       <span className="text-[13px] font-medium text-slate-600 group-hover:text-slate-800 transition-colors duration-200">{label}</span>
       <div className="flex items-center gap-2">
-        <div className="relative">
+        <div className="relative w-8 h-8 rounded-lg overflow-hidden border-2 border-slate-200 hover:border-teal-400 transition-all duration-200" style={{ backgroundColor: value }}>
           <input
             type="color"
             value={value}
             onChange={e => onChange(e.target.value)}
-            className="w-9 h-9 rounded-xl cursor-pointer appearance-none border-2 border-slate-200 hover:border-teal-400 transition-all duration-200"
-            style={{ backgroundColor: value, padding: 2 }}
+            className="absolute inset-0 w-full h-full cursor-pointer opacity-0"
           />
         </div>
         <input
@@ -520,16 +519,16 @@ function Section({ title, children, defaultOpen = false, icon }: { title: string
 
 function StepPill({ num, label, active, done }: { num: number; label: string; active: boolean; done: boolean }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5">
       <div
-        className="w-8 h-8 rounded-full text-[12px] font-bold flex items-center justify-center shrink-0 transition-all duration-300"
+        className="w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 transition-all duration-300"
         style={{
           background: done ? design.colors.success : active ? `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})` : design.colors.bg.tertiary,
           color: done || active ? "#fff" : design.colors.text.muted,
           boxShadow: active ? design.shadows.glow : "none",
         }}
       >
-        {done ? <Check size={14} strokeWidth={3} /> : num}
+        {done ? <Check size={12} strokeWidth={3} /> : num}
       </div>
       <span
         className="text-[12px] font-medium transition-colors duration-200"
@@ -543,7 +542,7 @@ function StepPill({ num, label, active, done }: { num: number; label: string; ac
 
 function StepConnector({ active }: { active: boolean }) {
   return (
-    <div className="w-10 h-0.5 rounded-full transition-all duration-300" style={{ background: active ? design.colors.success : design.colors.border }} />
+    <div className="w-8 h-0.5 rounded-full transition-all duration-300" style={{ background: active ? design.colors.success : design.colors.border }} />
   );
 }
 
@@ -686,7 +685,7 @@ export default function RestaurantThemeBuilder() {
         {/* Brand */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <img src={SahlLogo} height={52} width={52} className="rounded-lg" />
+            <img src={SahlLogo} height={52} width={52} />
             <div className="flex flex-col">
               <span className="text-[14px] font-bold text-slate-900 tracking-tight">Website Builder</span>
               <span className="text-[10px] text-slate-400 font-medium">Restaurant Theme Studio</span>
@@ -851,13 +850,13 @@ export default function RestaurantThemeBuilder() {
         {currentStep === 1 && (
           <div className="w-[350px] min-w-[350px] bg-white border-r flex flex-col overflow-hidden" style={{ borderColor: design.colors.border }}>
             {/* Theme Generator */}
-            <div className="px-5 py-5 border-b shrink-0" style={{ borderColor: design.colors.border, background: `linear-gradient(180deg, ${design.colors.bg.secondary} 0%, ${design.colors.bg.tertiary} 100%)` }}>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 rounded-xl" style={{ background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`, boxShadow: design.shadows.glow }}>
-                  <Wand2 size={18} className="text-white" />
+            <div className="px-5 py-3 border-b shrink-0" style={{ borderColor: design.colors.border, background: `linear-gradient(180deg, ${design.colors.bg.secondary} 0%, ${design.colors.bg.tertiary} 100%)` }}>
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="p-2 rounded-xl" style={{ background: `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`, boxShadow: design.shadows.glow }}>
+                  <Wand2 size={16} className="text-white" />
                 </div>
                 <div>
-                  <div className="text-[13px] font-bold text-slate-800">Quick Theme Generator</div>
+                  <div className="text-[12px] font-bold text-slate-800">Quick Theme Generator</div>
                   <div className="text-[10px] text-slate-400">Describe your restaurant style</div>
                 </div>
               </div>
@@ -866,14 +865,14 @@ export default function RestaurantThemeBuilder() {
                 onChange={e => setPromptText(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) generateFromPrompt(); }}
                 placeholder="Try: pizza rustic, sushi elegant, burger modern, vadapav minimal..."
-                rows={3}
-                className="w-full text-[13px] border rounded-xl px-4 py-3 resize-none outline-none transition-all duration-200 focus:border-teal-500 focus:ring-3 focus:ring-teal-500/10 placeholder:text-slate-400"
+                rows={2}
+                className="w-full text-[13px] border rounded-xl px-3 py-2 resize-none outline-none transition-all duration-200 focus:border-teal-500 focus:ring-3 focus:ring-teal-500/10 placeholder:text-slate-400"
                 style={{ borderColor: design.colors.border }}
               />
               <button
                 onClick={generateFromPrompt}
                 disabled={aiLoading || !promptText.trim()}
-                className="w-full mt-3 py-3 text-[13px] font-semibold rounded-xl border-none transition-all duration-200 disabled:cursor-not-allowed"
+                className="w-full mt-2.5 py-2 text-[12px] font-semibold rounded-xl border-none transition-all duration-200 disabled:cursor-not-allowed"
                 style={{
                   background: promptText.trim() && !aiLoading
                     ? `linear-gradient(135deg, ${design.colors.primaryLight}, ${design.colors.primary})`
